@@ -12,12 +12,12 @@ public class ConfigUtil {
     static {
         try (InputStream input = ConfigUtil.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             if (input == null) {
-                System.err.println("ERRO: Arquivo de propriedades '" + PROPERTIES_FILE + "' não encontrado no classpath.");
+                System.err.println("[ERRO]: Arquivo de propriedades '" + PROPERTIES_FILE + "' não encontrado no classpath.");
             } else {
                 PROPERTIES.load(input);
             }
         } catch (IOException ex) {
-            System.err.println("ERRO ao carregar o arquivo de propriedades: " + ex.getMessage());
+            System.err.println("[ERRO]: ao carregar o arquivo de propriedades: " + ex.getMessage());
         }
     }
     
