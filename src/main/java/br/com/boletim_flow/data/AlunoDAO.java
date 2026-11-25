@@ -1,5 +1,6 @@
 package br.com.boletim_flow.data;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +19,8 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 		String query = "SELECT * FROM aluno;";
 		List<Aluno> alunos = new ArrayList<>();
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			try(ResultSet rs = ps.executeQuery()){
 				while(rs.next()) {
@@ -40,7 +42,8 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 	public Optional<Aluno> buscarPorId(long id) {
 		String query = "SELECT * FROM aluno WHERE id = ?";
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			ps.setLong(1, id);
 			
@@ -58,11 +61,11 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 	}
 
 	
-	@Override
 	public Optional<Aluno> buscarPorNome(String nome) {
 		String query = "SELECT * FROM aluno WHERE nome = ?";
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			ps.setString(1, nome);
 			
@@ -80,8 +83,7 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 	}
 	
 	
-	@Override
-	public Aluno mapear(ResultSet rs) throws SQLException {
+	private Aluno mapear(ResultSet rs) throws SQLException {
 		return new Aluno(
 			rs.getLong("id"),
 			rs.getString("matricula"),

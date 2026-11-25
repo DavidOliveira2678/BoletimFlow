@@ -1,5 +1,6 @@
 package br.com.boletim_flow.data;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +20,8 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 		String query = "SELECT * FROM disciplina;";
 		List<Disciplina> disciplinas = new ArrayList<>();
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			try(ResultSet rs = ps.executeQuery()){
 				while(rs.next()) {
@@ -42,7 +44,8 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 	public Optional<Disciplina> buscarPorId(long id) {
 		String query = "SELECT * FROM disciplina WHERE id = ?";
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			ps.setLong(1, id);
 			
@@ -60,11 +63,11 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 	}
 	
 
-	@Override
 	public Optional<Disciplina> buscarPorNome(String nome) {
 		String query = "SELECT * FROM disciplina WHERE nome = ?";
 		
-		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
 			
 			ps.setString(1, nome);
 			
@@ -73,7 +76,7 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 			}
 			
 		} catch (SQLException e) {
-			System.err.println("[ERRO]: Erro ao buscar a disciplina de nome " + nome + ": " + e);
+			System.err.println("[ERRO]: Erro ao buscar disciplina de nome " + nome + ": " + e);
 			e.printStackTrace();
 			throw new DatabaseException("Erro interno no banco dados");
 		}
@@ -82,8 +85,7 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 	}
 	
 	
-	@Override
-	public Disciplina mapear(ResultSet rs) throws SQLException {
+	private Disciplina mapear(ResultSet rs) throws SQLException {
 		return new Disciplina(
 			rs.getLong("id"),
 			rs.getString("nome"),
