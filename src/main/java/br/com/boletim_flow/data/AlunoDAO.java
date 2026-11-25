@@ -22,7 +22,7 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 			
 			try(ResultSet rs = ps.executeQuery()){
 				while(rs.next()) {
-					Aluno aluno = mapearAluno(rs);
+					Aluno aluno = mapear(rs);
 					alunos.add(aluno);
 				}
 			}
@@ -46,7 +46,7 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 			ps.setString(1, nome);
 			
 			try(ResultSet rs = ps.executeQuery()){
-				if(rs.next()) return Optional.of(mapearAluno(rs));
+				if(rs.next()) return Optional.of(mapear(rs));
 			}
 			
 		} catch (SQLException e) {
@@ -59,7 +59,8 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 	}
 	
 	
-	private Aluno mapearAluno(ResultSet rs) throws SQLException {
+	@Override
+	public Aluno mapear(ResultSet rs) throws SQLException {
 		return new Aluno(
 			rs.getLong("id"),
 			rs.getString("matricula"),

@@ -23,7 +23,7 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 			
 			try(ResultSet rs = ps.executeQuery()){
 				while(rs.next()) {
-					Disciplina disciplina= mapearDisciplina(rs);
+					Disciplina disciplina= mapear(rs);
 					disciplinas.add(disciplina);
 				}
 			}
@@ -47,7 +47,7 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 			ps.setString(1, nome);
 			
 			try(ResultSet rs = ps.executeQuery()){
-				if(rs.next()) return Optional.of(mapearDisciplina(rs));
+				if(rs.next()) return Optional.of(mapear(rs));
 			}
 			
 		} catch (SQLException e) {
@@ -60,7 +60,8 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 	}
 	
 	
-	private Disciplina mapearDisciplina(ResultSet rs) throws SQLException {
+	@Override
+	public Disciplina mapear(ResultSet rs) throws SQLException {
 		return new Disciplina(
 			rs.getLong("id"),
 			rs.getString("nome"),
