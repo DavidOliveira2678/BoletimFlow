@@ -37,6 +37,28 @@ public class DisciplinaDAO implements GenericDAO<Disciplina> {
 		return disciplinas;
 	}
 	
+	
+	@Override
+	public Optional<Disciplina> buscarPorId(long id) {
+		String query = "SELECT * FROM disciplina WHERE id = ?";
+		
+		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+			
+			ps.setLong(1, id);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) return Optional.of(mapear(rs));
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("[ERRO]: Erro ao buscar disciplina de ID " + id + ": " + e);
+			e.printStackTrace();
+			throw new DatabaseException("Erro interno no banco dados");
+		}
+		
+		return Optional.empty();
+	}
+	
 
 	@Override
 	public Optional<Disciplina> buscarPorNome(String nome) {

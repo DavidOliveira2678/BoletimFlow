@@ -35,6 +35,27 @@ public class AlunoDAO implements GenericDAO<Aluno> {
 		
 		return alunos;
 	}
+	
+	@Override
+	public Optional<Aluno> buscarPorId(long id) {
+		String query = "SELECT * FROM aluno WHERE id = ?";
+		
+		try(PreparedStatement ps = ConexaoBD.getConnection().prepareStatement(query)){
+			
+			ps.setLong(1, id);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) return Optional.of(mapear(rs));
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("[ERRO]: Erro ao buscar aluno de ID " + id + ": " + e);
+			e.printStackTrace();
+			throw new DatabaseException("Erro interno no banco dados");
+		}
+		
+		return Optional.empty();
+	}
 
 	
 	@Override

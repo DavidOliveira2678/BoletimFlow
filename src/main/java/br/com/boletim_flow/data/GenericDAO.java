@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface GenericDAO<T> {
 	List<T> buscarTodos();
+	Optional<T> buscarPorId(long id);
 	Optional<T> buscarPorNome(String nome);
 	T mapear(ResultSet rs) throws SQLException;
 }
