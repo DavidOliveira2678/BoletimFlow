@@ -1,0 +1,95 @@
+package br.com.boletim_flow.data;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import br.com.boletim_flow.entity.Aluno;
+import br.com.boletim_flow.entity.Disciplina;
+import br.com.boletim_flow.exception.DatabaseException;
+import br.com.boletim_flow.utils.ConexaoBD;
+
+public class DisciplinaDAO implements GenericDAO<Disciplina> {
+
+	@Override
+	public List<Disciplina> buscarTodos() {
+		String query = "SELECT * FROM disciplina;";
+		List<Disciplina> disciplinas = new ArrayList<>();
+		
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
+			
+			try(ResultSet rs = ps.executeQuery()){
+				while(rs.next()) {
+					Disciplina disciplina= mapear(rs);
+					disciplinas.add(disciplina);
+				}
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("[ERRO]: Erro ao buscar todos as disciplinas: " + e);
+			e.printStackTrace();
+			throw new DatabaseException("Erro interno no banco dados");
+		}
+		
+		return disciplinas;
+	}
+	
+	
+	@Override
+	public Optional<Disciplina> buscarPorId(long id) {
+		String query = "SELECT * FROM disciplina WHERE id = ?";
+		
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
+			
+			ps.setLong(1, id);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) return Optional.of(mapear(rs));
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("[ERRO]: Erro ao buscar disciplina de ID " + id + ": " + e);
+			e.printStackTrace();
+			throw new DatabaseException("Erro interno no banco dados");
+		}
+		
+		return Optional.empty();
+	}
+	
+
+	public Optional<Disciplina> buscarPorNome(String nome) {
+		String query = "SELECT * FROM disciplina WHERE nome = ?";
+		
+		try(Connection conn = ConexaoBD.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query)){
+			
+			ps.setString(1, nome);
+			
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) return Optional.of(mapear(rs));
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("[ERRO]: Erro ao buscar disciplina de nome " + nome + ": " + e);
+			e.printStackTrace();
+			throw new DatabaseException("Erro interno no banco dados");
+		}
+		
+		return Optional.empty();
+	}
+	
+	
+	private Disciplina mapear(ResultSet rs) throws SQLException {
+		return new Disciplina(
+			rs.getLong("id"),
+			rs.getString("nome"),
+			rs.getInt("carga_horaria")
+		);
+	}
+}
