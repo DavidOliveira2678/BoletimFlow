@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import br.com.boletim_flow.entity.Aluno;
 import br.com.boletim_flow.entity.Boletim;
+import br.com.boletim_flow.entity.BoletimLinha;
 import br.com.boletim_flow.entity.Nota;
 import br.com.boletim_flow.exception.DatabaseException;
 import br.com.boletim_flow.utils.ConexaoBD;
@@ -41,11 +42,7 @@ public class BoletimDAO {
 							rs.getString("disciplina"),
 							k -> new ArrayList<>()).add(rs.getBigDecimal("valor"));
 				}
-				
 			}
-			
-			//TODO: SEGUIR COM A IMPLEMENTAÇÃO
-			
 		
 		} catch (SQLException e) {
 			System.err.println("[ERRO]: Erro ao gerar boletim do aluno: " + aluno.nome() + ": " + e);
@@ -53,7 +50,17 @@ public class BoletimDAO {
 			throw new DatabaseException("Erro interno no banco dados");
 		}
 		
-		return null;
+		List<BoletimLinha> linhas = new ArrayList<>();
+		
+		for (Map.Entry<String, List<BigDecimal>> entrada : notasPorDisciplina.entrySet()) {
+			
+			String disciplina = entrada.getKey();
+			List<BigDecimal> notas = entrada.getValue();
+			BoletimLinha boletimLinha = new BoletimLinha(disciplina, notas, calcularMedia(notas));
+			linhas.add(boletimLinha);
+		}
+		
+		return new Boletim(aluno, linhas);
 	}
 	
 
